@@ -54,7 +54,129 @@ graph TD
 
 ---
 
-## 3. Sequence Diagram (The Validation Loop)
+## 3. ADK + MCP Architecture (Core Hackathon Components)
+
+This section details the two primary frameworks used in this hackathon submission: **Google Agent Development Kit (ADK)** for agent orchestration and **Model Context Protocol (MCP)** for secure, standardized tool access.
+
+### MCP Server — Tool Layer
+
+The MCP Server (`src/mcp/workspace_server.py`) is deployed to **Cloud Run** and exposes Google Workspace APIs as standardized MCP tools over **SSE (Server-Sent Events)** transport:
+
+```mermaid
+graph LR
+    classDef mcp fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px,color:#000
+    classDef tool fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#000
+    classDef api fill:#fce4ec,stroke:#c62828,stroke-width:2px,color:#000
+    classDef transport fill:#e0f7fa,stroke:#00838f,stroke-width:2px,color:#000
+
+    subgraph "MCP Server (Cloud Run)"
+        direction TB
+        SSE["SSE Transport<br/>http://host:9000/sse"]:::transport
+        
+        subgraph "Exposed MCP Tools"
+            T1["fetch_doc_content<br/>Read Google Doc body text"]:::tool
+            T2["fetch_tab_content<br/>Read named Doc tab (e.g. Transcript)"]:::tool
+            T3["mark_mismatch<br/>Highlight + tag mismatched fields"]:::tool
+            T4["stage_proposals<br/>Write proposals to Proposal tab"]:::tool
+            T5["clear_document_decorations<br/>Remove existing highlights/tags"]:::tool
+            T6["list_files_in_folder<br/>List Drive folder contents"]:::tool
+        end
+    end
+
+    subgraph "Google Workspace APIs"
+        DOCS["Google Docs API v1"]:::api
+        DRIVE["Google Drive API v3"]:::api
+    end
+
+    SSE --> T1 & T2 & T3 & T4 & T5 & T6
+    T1 & T2 & T3 & T4 & T5 --> DOCS
+    T6 --> DRIVE
+```
+
+### ADK Agent — Orchestration Layer
+
+The **Mismatch Analyze Agent** (`src/agents/analyze_agent.py`) uses the Google ADK with **Gemini 2.5 Flash** and **Pydantic structured output** to cross-reference brief documents against meeting transcripts:
+
+```mermaid
+graph TD
+    classDef adk fill:#fff8e1,stroke:#ffa000,stroke-width:3px,color:#000
+    classDef mcp fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px,color:#000
+    classDef gemini fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    classDef output fill:#fce4ec,stroke:#c62828,stroke-width:2px,color:#000
+
+    subgraph "Google ADK Agent"
+        direction TB
+        AGENT["Mismatch Analyze Agent<br/>(google.adk.Agent)"]:::adk
+        RUNNER["ADK Runner<br/>(google.adk.Runner)"]:::adk
+        SESSION["InMemorySessionService"]:::adk
+        SCHEMA["Pydantic Output Schema<br/>ProposalAnalysis"]:::adk
+    end
+
+    subgraph "MCP Client Connection"
+        MCP_CLIENT["MCP ClientSession<br/>(SSE Transport)"]:::mcp
+        FETCH_BRIEF["fetch_doc_content()"]:::mcp
+        FETCH_TRANS["fetch_tab_content()"]:::mcp
+        MARK["mark_mismatch()"]:::mcp
+        STAGE["stage_proposals()"]:::mcp
+    end
+
+    LLM["Gemini 2.5 Flash<br/>Cross-Reference Analysis"]:::gemini
+
+    OUTPUT["Structured Proposals<br/>PROP-1, PROP-2, ..."]:::output
+
+    MCP_CLIENT --> FETCH_BRIEF & FETCH_TRANS
+    FETCH_BRIEF -->|Brief text| AGENT
+    FETCH_TRANS -->|Transcript text| AGENT
+    AGENT --> RUNNER
+    RUNNER --> LLM
+    LLM --> SCHEMA
+    SCHEMA --> OUTPUT
+    OUTPUT --> MARK & STAGE
+```
+
+### ADK + MCP Integration Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ADDON as Google Workspace Add-on
+    participant API as Flask Backend API
+    participant MCP as MCP Server (Cloud Run)
+    participant ADK as ADK Mismatch Agent
+    participant GEMINI as Gemini 2.5 Flash
+    participant DOCS as Google Docs API
+    participant FS as Cloud Firestore
+
+    ADDON->>API: POST /analyze (brief_id, transcript_id)
+    API->>ADK: Trigger analyze_transcript_and_brief()
+    ADK->>MCP: Connect via SSE (ClientSession)
+    ADK->>MCP: call_tool("fetch_doc_content", brief_id)
+    MCP->>DOCS: docs.documents.get()
+    DOCS-->>MCP: Raw brief text
+    MCP-->>ADK: Brief content
+    ADK->>MCP: call_tool("fetch_tab_content", transcript_id)
+    MCP->>DOCS: docs.documents.get(tab="Transcript")
+    DOCS-->>MCP: Raw transcript text
+    MCP-->>ADK: Transcript content
+
+    rect rgb(255, 248, 225)
+    Note over ADK, GEMINI: ADK Agent Execution
+    ADK->>GEMINI: Prompt: Compare brief vs transcript
+    GEMINI-->>ADK: ProposalAnalysis (structured JSON)
+    end
+
+    ADK->>MCP: call_tool("clear_document_decorations")
+    ADK->>MCP: call_tool("mark_mismatch") × N proposals
+    ADK->>MCP: call_tool("stage_proposals")
+    MCP->>DOCS: batchUpdate (highlights + Proposal tab)
+    ADK-->>API: Return proposals[]
+    API->>FS: Write gap flags + proposals
+```
+
+---
+
+## 4. Sequence Diagram (The Validation Loop)
+
 
 ```mermaid
 sequenceDiagram
@@ -98,7 +220,7 @@ sequenceDiagram
 
 ---
 
-## 4. Architecture Block Diagram
+## 5. Architecture Block Diagram
 
 ```mermaid
 graph TD
@@ -148,7 +270,7 @@ graph TD
 
 ---
 
-## 5. Ingestion vs. Execution: The Role of Cloud Run & GHA Runners
+## 6. Ingestion vs. Execution: The Role of Cloud Run & GHA Runners
 
 One common point of confusion is whether the new **Google Agent Development Kit (ADK)** eliminates the need for **Cloud Run** and **GitHub Actions Runners**. 
 
@@ -170,7 +292,7 @@ One common point of confusion is whether the new **Google Agent Development Kit 
 
 ---
 
-## 6. Calendar-Based Deterministic Meeting-to-Client Mapping
+## 7. Calendar-Based Deterministic Meeting-to-Client Mapping
 
 To avoid flaky heuristic matching (such as matching domain names from generic emails like `@gmail.com`), we enforce **explicit operator control** when mapping meetings to clients.
 
