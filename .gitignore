@@ -1,0 +1,20 @@
+# Local development environments
+.venv/
+env/
+venv/
+ENV/
+
+# Local credentials & configuration files (critical security)
+.env
+service-account-key.json
+
+# Python cache & system files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+
+# IDE configuration files
+.vscode/
+.idea/

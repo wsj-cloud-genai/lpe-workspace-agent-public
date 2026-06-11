@@ -1,0 +1,46 @@
+{
+  "company_name": "ApexAnalytics",
+  "brand": {
+    "theme_mode": "glassmorphism",
+    "primary_color": "#0D9488",
+    "secondary_color": "#115E59",
+    "font_family": "Outfit",
+    "logo_url": null
+  },
+  "hero": {
+    "headline": "Grow faster with real-time operations telemetry",
+    "subheadline": "Deploy state-of-the-art interactive dashboards and monitor performance in under 15 seconds.",
+    "cta_label": "Start Free Trial",
+    "cta_href": "https://apex.analytics/trial",
+    "image_url": null
+  },
+  "features": [
+    {
+      "title": "Sub-Second Latency",
+      "desc": "Stream operations metrics in real-time without locking threads or freezing visual frames."
+    },
+    {
+      "title": "Autonomous Audits",
+      "desc": "An anomaly-detection engine continuously reviews configurations to prevent regressions."
+    },
+    {
+      "title": "Premium Design System",
+      "desc": "Beautiful glassmorphism aesthetics customized dynamically to match your company branding guidelines."
+    }
+  ],
+  "reviews": [
+    {
+      "name": "Jane Smith",
+      "business": "CEO at CloudFlow",
+      "text": "The fastest set of dashboards we have ever integrated. The telemetry is completely fluid and accurate.",
+      "rating": 5,
+      "source": "google"
+    }
+  ],
+  "metadata": {
+    "onboarding_doc_id": "mock_onboarding_doc_123",
+    "meet_transcript_id": "mock_meet_transcript_456",
+    "context_enriched_at": "2026-05-22T23:30:00Z",
+    "gaps_resolved": true
+  }
+}

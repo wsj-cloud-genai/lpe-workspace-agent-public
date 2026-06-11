@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      font-size: 14px;
+      padding: 16px;
+      color: #202124;
+      background: #fff;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      color: #1a73e8;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      color: #5f6368;
+    }
+
+    /* Tabs Navigation styling */
+    .tabs-container {
+      display: flex;
+      border-bottom: 1px solid #dadce0;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #5f6368;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+      font-size: 13px;
+    }
+
+    .tab.active {
+      color: #1a73e8;
+      border-bottom: 2px solid #1a73e8;
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #5f6368;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 1px #1a73e8;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      transition: background 0.15s ease;
+    }
+
+    button:hover {
+      background: #1557b0;
+    }
+
+    button.secondary {
+      background: white;
+      color: #1a73e8;
+      border: 1px solid #dadce0;
+    }
+
+    button.secondary:hover {
+      background: #f1f3f4;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .button-group button {
+      flex: 1;
+    }
+
+    .error,
+    .success {
+      position: fixed;
+      top: -120px;
+      left: 0;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      transition: top 0.3s ease-in-out;
+      white-space: pre-wrap;
+    }
+
+    .error {
+      background: #fce8e6;
+      color: #c5221f;
+      border-bottom: 2px solid #ea4335;
+    }
+
+    .success {
+      background: #e6f4ea;
+      color: #137333;
+      border-bottom: 2px solid #34a853;
+    }
+
+    .error.show,
+    .success.show {
+      top: 0;
+    }
+
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      box-sizing: border-box;
+    }
+
+    .loading.show {
+      display: flex;
+    }
+
+    #loading-text {
+      font-weight: 500;
+      color: #1a73e8;
+      font-size: 14px;
+      margin-top: 12px;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #1a73e8;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .feature-item input {
+      flex: 1;
+    }
+
+    .feature-item button {
+      width: auto;
+      padding: 8px 12px;
+      margin: 0;
+    }
+
+    .result-box {
+      background: #f8f9fa;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .result-label {
+      font-size: 12px;
+      color: #5f6368;
+      margin-bottom: 4px;
+    }
+
+    .result-value {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #202124;
+      word-break: break-all;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .toggle-group input[type="checkbox"] {
+      width: auto;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    small {
+      display: block;
+      color: #5f6368;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Persistent Status Banners -->
+  <div id="error-message" class="error"></div>
+  <div id="success-message" class="success"></div>
+  <div id="loading-indicator" class="loading">
+    <div class="spinner"></div>
+    <div id="loading-text">Working...</div>
+  </div>
+
+  <!-- Tab Navigation Headers -->
+  <div class="tabs-container">
+    <div id="tab-onboard" class="tab active" onclick="switchTab('onboard')">Client Onboarding</div>
+    <div id="tab-meetings" class="tab" onclick="switchTab('meetings')">Meetings</div>
+    <div id="tab-builder" class="tab" onclick="switchTab('builder')">Page Builder</div>
+    <div id="tab-proposals" class="tab" onclick="switchTab('proposals')">Proposals</div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TAB 1: CLIENT ONBOARDING VIEW                 -->
+  <!-- ============================================== -->
+  <div id="onboard-tab-view" class="tab-view active">
+    <h2>Client Workspace Provisioner</h2>
+    <p style="margin-bottom: 16px; color: #5f6368; font-size: 13px; line-height: 1.4;">
+      Automatically create a client campaign directory, standard copywriting briefing doc, and meeting transcripts
+      dropzone in Google Drive.
+    </p>
+
+    <div id="onboarding-form">
+      <div class="form-group">
+        <label for="onboard-client-name">Client Name</label>
+        <input type="text" id="onboard-client-name" placeholder="e.g. Acme Corp" required>
+        <small>Required. Used to name the directory and briefing files.</small>
+      </div>
+      <div class="form-group">
+        <label for="onboard-contact-first-name">Contact First Name</label>
+        <input type="text" id="onboard-contact-first-name" placeholder="e.g. Jane">
+      </div>
+      <div class="form-group">
+        <label for="onboard-contact-last-name">Contact Last Name</label>
+        <input type="text" id="onboard-contact-last-name" placeholder="e.g. Johnson">
+      </div>
+      <div class="form-group">
+        <label for="onboard-client-emails">Associated Emails</label>
+        <input type="text" id="onboard-client-emails" placeholder="e.g. user@example.com, info@example.com">
+        <small>Comma-separated list. Used to match meeting attendees.</small>
+      </div>
+      <div class="form-group">
+        <label for="onboard-client-domains">Associated Domains</label>
+        <input type="text" id="onboard-client-domains" placeholder="e.g. example.com">
+        <small>Comma-separated list. Used to match client domain.</small>
+      </div>
+      <button onclick="runOnboarding()">Provision Workspace Folder</button>
+      <button onclick="runScenarioSeeding()" style="background: #e67e22; margin-top: 12px;">🧪 Seed Test Scenarios</button>
+    </div>
+
+    <!-- Onboarding Result Panel -->
+    <div id="onboarding-results" class="hidden">
+      <div class="success show" style="margin-bottom: 16px;">
+        Workspace folder structured successfully!
+      </div>
+
+      <div class="result-box" style="border-left: 4px solid #1a73e8;">
+        <div class="result-label">Briefing Document (Copy Guidelines)</div>
+        <a id="result-doc-link" href="#" target="_blank"
+          style="color: #1a73e8; font-weight: 500; text-decoration: none; font-size: 13px; display: inline-block; margin-top: 4px;">📝
+          Open Campaign Briefing Doc</a>
+      </div>
+
+      <div class="result-box">
+        <div class="result-label">Client Drive Root Folder</div>
+        <a id="result-folder-link" href="#" target="_blank"
+          style="color: #1a73e8; font-weight: 500; text-decoration: none; font-size: 13px; display: inline-block; margin-top: 4px;">📁
+          Open Drive Folder</a>
+      </div>
+
+      <div class="result-box">
+        <div class="result-label">Meet Transcripts Folder</div>
+        <a id="result-transcripts-link" href="#" target="_blank"
+          style="color: #1a73e8; font-weight: 500; text-decoration: none; font-size: 13px; display: inline-block; margin-top: 4px;">🎙️
+          Open Transcripts dropzone</a>
+      </div>
+
+      <button class="secondary" onclick="resetOnboardingForm()" style="margin-top: 16px;">Onboard Another
+        Client</button>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TAB 3: LINK MEETINGS VIEW                      -->
+  <!-- ============================================== -->
+  <div id="meetings-tab-view" class="tab-view">
+    <h2>Calendar Meetings & Linker</h2>
+    <p style="margin-bottom: 16px; color: #5f6368; font-size: 13px; line-height: 1.4;">
+      Schedule a Google Meet event or map an existing calendar meeting directly to an active Client.
+    </p>
+
+    <div class="form-group"
+      style="background: #f8f9fa; border: 1px solid #dadce0; border-radius: 4px; padding: 12px; margin-bottom: 16px;">
+      <label for="meet-client-select" style="font-weight: 500;">Target Client</label>
+      <select id="meet-client-select" onchange="onMeetClientChange()" style="margin-top: 4px;">
+        <option value="">-- Choose Client --</option>
+      </select>
+      <small style="margin-top: 4px;">Registry clients loaded dynamically.</small>
+    </div>
+
+    <!-- Schedule Call Section (Option 1) -->
+    <div id="schedule-meeting-form"
+      style="background: #f8f9fa; border: 1px solid #dadce0; border-radius: 4px; padding: 12px; margin-bottom: 16px;">
+      <h3 style="margin-top: 0; margin-bottom: 12px; color: #1a73e8; font-size: 14px;">Schedule Kickoff Event</h3>
+
+      <div class="form-group">
+        <label for="sched-meet-title">Event Title</label>
+        <input type="text" id="sched-meet-title" placeholder="e.g. Acme Kickoff Call" required>
+      </div>
+
+      <div class="form-group">
+        <label for="sched-meet-time">Date & Time</label>
+        <input type="datetime-local" id="sched-meet-time" required>
+      </div>
+
+      <div class="form-group">
+        <label for="sched-meet-email">Client Email (Optional)</label>
+        <input type="text" id="sched-meet-email" placeholder="e.g. client@example.com">
+        <small>If provided, sends a Calendar invite automatically.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="sched-meet-desc">Description (Optional)</label>
+        <textarea id="sched-meet-desc"
+          placeholder="e.g. Discuss campaign goals and brand brief alignment..."></textarea>
+        <small>Pre-populated with default text. Edit if desired.</small>
+      </div>
+
+      <button onclick="scheduleMeeting()" style="margin-top: 8px;">📅 Schedule & Link Event</button>
+    </div>
+
+    <!-- Manual Mapping / Override Collapsible Section -->
+    <details id="manual-mapping-accordion"
+      style="margin-top: 16px; border: 1px solid #dadce0; border-radius: 4px; background: #f8f9fa;">
+      <summary
+        style="font-weight: 500; cursor: pointer; color: #1a73e8; padding: 10px 12px; outline: none; user-select: none; font-size: 13px;">
+        🔗 Link Existing Calendar Event (Manual Override)
+      </summary>
+      <div
+        style="padding: 12px; border-top: 1px solid #dadce0; background: #fff; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;">
+        <p style="margin-bottom: 12px; color: #5f6368; font-size: 12px; line-height: 1.4;">
+          If the client scheduled a meeting externally (e.g. via Calendly or direct Google Calendar invite), select the
+          <strong>Target Client</strong> above, then refresh and link the call here.
+        </p>
+
+        <button class="secondary" onclick="loadMeetingLinkerData()" style="margin-top: 0; margin-bottom: 12px;">🔄
+          Refresh Recent Calendar Events</button>
+
+        <div id="meetings-list-container">
+          <p style="color: #9e9e9e; font-style: italic; font-size: 13px; text-align: center; padding: 12px 0;">No
+            meetings loaded yet. Click refresh.</p>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TAB 2: PAGE BUILDER VIEW                      -->
+  <!-- ============================================== -->
+  <div id="builder-tab-view" class="tab-view">
+
+    <!-- Step 0: Connection Configuration -->
+    <div id="step-0" class="step active">
+      <h2>Connect to LPE</h2>
+      <div class="form-group">
+        <label for="api-url">LPE API Base URL</label>
+        <input type="url" id="api-url" placeholder="http://localhost:3000" value="http://localhost:3000">
+        <small>The base URL of your LPE instance</small>
+      </div>
+      <div class="form-group">
+        <label for="environment">Environment</label>
+        <select id="environment">
+          <option value="dev">Development</option>
+          <option value="staging">Staging</option>
+          <option value="prod">Production</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="api-key">LPE API Key</label>
+        <input type="password" id="api-key" placeholder="Enter X-Api-Key">
+        <small>Required to authenticate writes to Firestore (Registry & Meetings)</small>
+      </div>
+      <button onclick="saveConfigAndContinue()">Save & Continue</button>
+    </div>
+
+    <!-- Step 1: Page Basics -->
+    <div id="step-1" class="step">
+      <h2>Page Basics</h2>
+      
+      <!-- Onboarding & Connection Status Card -->
+      <div id="onboarding-status-card" style="background: #fff; border: 1px solid #dadce0; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 11px; color: #3c4043; box-shadow: 0 1px 2px rgba(0,0,0,0.05); text-align: left;">
+        <div style="font-weight: bold; font-size: 12px; color: #3c4043; border-bottom: 1px solid #f1f3f4; padding-bottom: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+          <span>📋 Onboarding Readiness</span>
+          <button onclick="checkOnboardingStatus()" style="background: none; border: none; color: #1a73e8; padding: 0; font-size: 11px; width: auto; font-weight: 500; cursor: pointer; text-decoration: underline; margin: 0;">Refresh</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div><strong>Active Doc:</strong> <span id="status-brief-name" style="color: #5f6368; word-break: break-all;">Loading...</span></div>
+          <div><strong>Client Profile:</strong> <span id="status-client-match" style="font-weight: 600;">Loading...</span></div>
+          <div><strong>Linked Meeting:</strong> <span id="status-meeting-match" style="font-weight: 600;">Loading...</span></div>
+          <div><strong>Meeting Transcript:</strong> <span id="status-transcript-match" style="font-weight: 600;">Loading...</span></div>
+        </div>
+      </div>
+
+      <div
+        style="background: #e8f0fe; border: 1px solid #1a73e8; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <p
+          style="font-size: 12px; color: #1a73e8; font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+          ⚡ Google Doc One-Click Build</p>
+        <p style="font-size: 11px; color: #5f6368; margin-bottom: 8px; line-height: 1.3;">Sync active briefing doc
+          contents, run brand alignment checks, and generate your LPE preview page directly from Workspace.</p>
+        <button onclick="runDocCompilation()"
+          style="background: #1a73e8; margin-top: 0; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; width: auto; display: inline-block;">Generate
+          Preview from Doc</button>
+      </div>
+      <div class="form-group"
+        style="background: #f8f9fa; border: 1px solid #dadce0; border-radius: 4px; padding: 12px; margin-bottom: 16px;">
+        <label for="builder-client-select" style="font-weight: 500;">Target Client</label>
+        <select id="builder-client-select" style="margin-top: 4px;">
+          <option value="">-- Choose Client --</option>
+        </select>
+        <small style="margin-top: 4px;">Registry clients loaded dynamically.</small>
+        <button onclick="runSyncClientMedia()" id="sync-media-btn"
+          style="background: #e67e22; margin-top: 10px; padding: 6px 12px; font-size: 11px; font-weight: bold; border-radius: 4px; width: 100%; display: block; border: none; color: white; cursor: pointer;">
+          📸 Sync Client Media (Images & Videos)
+        </button>
+      </div>
+      <div class="form-group"
+        style="background: #f8f9fa; border: 1px solid #dadce0; border-radius: 4px; padding: 12px; margin-bottom: 16px;">
+        <label for="builder-tag-select" style="font-weight: 500;">Showcase Tag</label>
+        <select id="builder-tag-select" style="margin-top: 4px;">
+          <option value="sandbox" selected>Sandbox</option>
+          <option value="saas">SaaS & Technology</option>
+          <option value="legal">Legal & Compliance</option>
+          <option value="healthcare">Healthcare & Wellness</option>
+          <option value="finance">Finance & Wealth</option>
+          <option value="home_services">Local Services (Contractors)</option>
+          <option value="agency">Creative Agency</option>
+          <option value="fashion">Fashion & Luxury Apparel</option>
+          <option value="restaurant">Restaurants & Hospitality</option>
+          <option value="automotive">Automotive & Dealerships</option>
+          <option value="real_estate">Real Estate & Property</option>
+          <option value="luxury">Luxury & High-End</option>
+        </select>
+        <small style="margin-top: 4px;">Select the filter tag for the Showcase Feed.</small>
+      </div>
+      <div class="form-group">
+        <label for="page-id">Page ID (slug)</label>
+        <input type="text" id="page-id" placeholder="spring-promo-2025" required>
+        <small>Lowercase, hyphens only (e.g., spring-promo-2025)</small>
+      </div>
+      <div class="form-group">
+        <label for="page-title">Page Title</label>
+        <input type="text" id="page-title" placeholder="Spring Promotion 2025" required>
+      </div>
+      <div class="form-group">
+        <label for="page-description">Page Description</label>
+        <textarea id="page-description"
+          placeholder="A limited-time spring promotion..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="audience-purpose">Audience & Purpose</label>
+        <textarea id="audience-purpose"
+          placeholder="Startup founders looking to scale..."></textarea>
+        <small>Used to guide AI content generation</small>
+      </div>
+      <div class="button-group">
+        <button class="secondary" onclick="prevStep()">Back</button>
+        <button onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Hero Section -->
+    <div id="step-2" class="step">
+      <h2>Hero Section</h2>
+      <div class="form-group">
+        <label for="hero-promise">Main Promise or Statement</label>
+        <textarea id="hero-promise" placeholder="Grow faster with our new AI tools..."
+          required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="cta-label">CTA Label</label>
+        <input type="text" id="cta-label" placeholder="Get Started">
+      </div>
+      <div class="form-group">
+        <label for="cta-type">CTA Type</label>
+        <select id="cta-type">
+          <option value="scroll">Scroll to Content</option>
+          <option value="route">Navigate to Page</option>
+          <option value="form">Open Form</option>
+        </select>
+      </div>
+      <div class="button-group">
+        <button class="secondary" onclick="prevStep()">Back</button>
+        <button onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Features Section -->
+    <div id="step-3" class="step">
+      <h2>Features Section</h2>
+      <div class="form-group">
+        <label>Features (one per line)</label>
+        <div id="features-list">
+          <div class="feature-item">
+            <input type="text" class="feature-input" placeholder="10x speed improvements">
+          </div>
+        </div>
+        <button class="secondary" onclick="addFeature()" style="width: auto; margin-top: 8px;">+ Add Feature</button>
+      </div>
+      <div class="button-group">
+        <button class="secondary" onclick="prevStep()">Back</button>
+        <button onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Assessment (Optional) -->
+    <div id="step-4" class="step">
+      <h2>Assessment (Optional)</h2>
+      <div class="toggle-group">
+        <input type="checkbox" id="assessment-enabled" onchange="toggleAssessment()">
+        <label for="assessment-enabled" style="margin: 0;">Enable Assessment</label>
+      </div>
+      <div id="assessment-fields" class="hidden">
+        <div class="form-group">
+          <label for="assessment-questions">Questions (one per line)</label>
+          <textarea id="assessment-questions"
+            placeholder="What is your team size?\nWhat is your biggest challenge?"></textarea>
+        </div>
+      </div>
+      <div class="button-group">
+        <button class="secondary" onclick="prevStep()">Back</button>
+        <button onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Theme & Routing -->
+    <div id="step-5" class="step">
+      <h2>Theme & Routing</h2>
+      <div class="form-group">
+        <label for="brand-keywords">Brand Keywords</label>
+        <input type="text" id="brand-keywords" placeholder="modern, fintech, innovative">
+        <small>Comma-separated keywords to guide theme</small>
+      </div>
+      <div class="form-group">
+        <label for="primary-color">Primary Color</label>
+        <input type="text" id="primary-color" placeholder="#1E90FF" value="#1E90FF">
+        <small>Hex color code</small>
+      </div>
+      <div class="form-group">
+        <label for="mood">Mood</label>
+        <select id="mood">
+          <option value="playful">Playful</option>
+          <option value="minimal">Minimal</option>
+          <option value="formal">Formal</option>
+          <option value="modern">Modern</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="desired-path">Desired URL Path</label>
+        <input type="text" id="desired-path" placeholder="/spring-promo">
+        <small>The route users will visit</small>
+      </div>
+      <div class="button-group">
+        <button class="secondary" onclick="prevStep()">Back</button>
+        <button onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 6: Generate -->
+    <div id="step-6" class="step">
+      <h2>Ready to Generate</h2>
+      <p style="margin-bottom: 16px; color: #5f6368;">
+        Review your inputs and click "Generate AI Draft" to create your page configuration.
+      </p>
+      <button onclick="generateDraft()">Generate AI Draft</button>
+      <button class="secondary" onclick="prevStep()">Back to Edit</button>
+    </div>
+
+    <!-- Step 7: Results -->
+    <div id="step-7" class="step">
+      <h2>Draft Generated!</h2>
+      <div id="adk-report-box" class="result-box hidden"
+        style="border-left: 4px solid #f2994a; background: #fff8f2; padding: 12px; margin-bottom: 12px; border-radius: 4px;">
+        <div class="result-label" style="color: #c07c3c; font-weight: bold; font-size: 11px;">ADK Brand Audit Report
+        </div>
+        <div id="result-adk-status"
+          style="font-weight: 700; text-transform: uppercase; font-size: 13px; margin: 4px 0;"></div>
+        <div id="result-adk-anomalies"
+          style="font-size: 11px; color: #5f6368; line-height: 1.4; max-height: 120px; overflow-y: auto; margin-top: 6px;">
+        </div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Page ID</div>
+        <div class="result-value" id="result-page-id"></div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Preview URL</div>
+        <div class="result-value" id="result-preview-url"></div>
+      </div>
+      <a id="result-preview-link" href="#" target="_blank" style="text-decoration: none; display: block;">
+        <button style="pointer-events: none;">Open Preview</button>
+      </a>
+      <button id="publish-showcase-btn" style="background: #1a73e8; margin-top: 8px;" onclick="publishToShowcase()">🚀
+        Publish to Showcase Feed</button>
+      <button class="secondary" onclick="copyJSON()">Copy JSON</button>
+      <button class="secondary" onclick="regenerate()">Regenerate Draft</button>
+      <button class="secondary" onclick="startOver()">New Page</button>
+    </div>
+
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TAB 4: PROPOSALS VIEW                          -->
+  <!-- ============================================== -->
+  <div id="proposals-tab-view" class="tab-view">
+    <h2>Mismatches & Suggestions</h2>
+    <p style="margin-bottom: 16px; color: #5f6368; font-size: 13px; line-height: 1.4;">
+      Review contradictions and missing details detected between the briefing guidelines and the meeting transcript. Approve changes to apply them to your document.
+    </p>
+    
+    <div id="proposals-list-container">
+      <p style="color: #9e9e9e; font-style: italic; font-size: 13px; text-align: center; padding: 24px 0;">
+        Loading suggestions...
+      </p>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 0;
+    let lpeConfig = null;
+    let generatedData = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      loadConfig();
+      
+      const builderSelect = document.getElementById('builder-client-select');
+      if (builderSelect) {
+        builderSelect.addEventListener('change', function() {
+          checkOnboardingStatus(this.value);
+        });
+      }
+    });
+
+    // Tab switching controller
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(tabId + '-tab-view').classList.add('active');
+
+      hideMessages();
+
+      // Auto-load meeting registry data when switching to meetings tab
+      if (tabId === 'meetings') {
+        loadMeetingLinkerData();
+      } else if (tabId === 'builder') {
+        loadClientDropdowns(function() {
+          checkOnboardingStatus();
+        });
+      } else if (tabId === 'proposals') {
+        loadProposals();
+      }
+    }
+
+    function loadClientDropdowns(callback) {
+      google.script.run
+        .withSuccessHandler(function (clients) {
+          const meetSelect = document.getElementById('meet-client-select');
+          const builderSelect = document.getElementById('builder-client-select');
+
+          const meetVal = meetSelect ? meetSelect.value : '';
+          const builderVal = builderSelect ? builderSelect.value : '';
+
+          if (meetSelect) {
+            meetSelect.innerHTML = '<option value="">-- Choose Client --</option>';
+          }
+          if (builderSelect) {
+            builderSelect.innerHTML = '<option value="">-- Choose Client --</option>';
+          }
+
+          clients.forEach(c => {
+            if (meetSelect) {
+              const opt1 = document.createElement('option');
+              opt1.value = c.id;
+              opt1.textContent = c.name;
+              meetSelect.appendChild(opt1);
+            }
+            if (builderSelect) {
+              const opt2 = document.createElement('option');
+              opt2.value = c.id;
+              opt2.textContent = c.name;
+              builderSelect.appendChild(opt2);
+            }
+          });
+
+          if (meetSelect) meetSelect.value = meetVal;
+          if (builderSelect) builderSelect.value = builderVal;
+
+          // Auto-detect and select client if builderSelect is empty
+          if (builderSelect && !builderSelect.value) {
+            google.script.run
+              .withSuccessHandler(function (detectedClientId) {
+                if (detectedClientId && builderSelect) {
+                  builderSelect.value = detectedClientId;
+                }
+                if (callback) callback();
+              })
+              .withFailureHandler(function (err) {
+                console.error('Doc client detection failed:', err);
+                if (callback) callback();
+              })
+              .apiGetDocumentClient();
+          } else {
+            if (callback) callback();
+          }
+        })
+        .withFailureHandler(function (err) {
+          showError('Client registry load failed: ' + err.message);
+          if (callback) callback();
+        })
+        .apiGetClientList();
+    }
+
+    function loadMeetingLinkerData() {
+      showLoading(true, 'Fetching clients and calendar...');
+      hideMessages();
+
+      loadClientDropdowns(function () {
+        // Fetch Recent Meetings containing Google Meet links
+        google.script.run
+          .withSuccessHandler(function (meetings) {
+            showLoading(false);
+            const container = document.getElementById('meetings-list-container');
+            if (meetings.length === 0) {
+              container.innerHTML = '<p style="color: #9e9e9e; font-style: italic; font-size: 13px; text-align: center; padding: 12px 0;">No Google Meet events found in primary calendar.</p>';
+              return;
+            }
+
+            let html = '';
+            meetings.forEach(m => {
+              const dateStr = new Date(m.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+              html += `
+                  <div class="result-box" style="margin-bottom: 12px; border-left: 3px solid #1a73e8; background: #fff;">
+                    <div style="font-weight: 500; font-size: 13px; color: #202124;">${escapeHtml(m.title)}</div>
+                    <div style="font-size: 11px; color: #5f6368; margin-top: 2px;">
+                      ⏰ ${dateStr} <br/>
+                      🔑 Meet ID: <span style="font-family:monospace; font-size: 10px; font-weight: bold; color: #1a73e8;">${m.meetId}</span>
+                    </div>
+                    <button class="secondary" style="padding: 6px 12px; font-size: 12px; margin-top: 8px; width: auto; font-weight: 500;" 
+                      onclick="linkMeeting('${m.meetId}', '${escapeQuote(m.title)}', '${m.time}')">
+                      🔗 Link Call
+                    </button>
+                  </div>
+                `;
+            });
+            container.innerHTML = html;
+          })
+          .withFailureHandler(function (err) {
+            showLoading(false);
+            showError('Calendar retrieval failed: ' + err.message);
+          })
+          .apiGetRecentMeetings();
+      });
+    }
+
+    function linkMeeting(meetId, title, time) {
+      const select = document.getElementById('meet-client-select');
+      const clientId = select.value;
+      if (!clientId) {
+        showError('Please choose a Target Client from the dropdown first.');
+        return;
+      }
+
+      showLoading(true, 'Mapping meeting ' + meetId + ' to client ' + clientId + '...');
+      hideMessages();
+
+      google.script.run
+        .withSuccessHandler(function (success) {
+          showLoading(false);
+          if (success) {
+            showSuccess('Mapped Google Meet call ' + meetId + ' to ' + clientId + ' successfully!');
+          } else {
+            showError('Failed to save meeting linkage. Ensure LPE API is active.');
+          }
+        })
+        .withFailureHandler(function (err) {
+          showLoading(false);
+          showError('Linkage webhook failed: ' + err.message);
+        })
+        .apiLinkMeetingToClient(meetId, clientId, title, time);
+    }
+
+    function onMeetClientChange() {
+      const select = document.getElementById('meet-client-select');
+      const selectedText = select.options[select.selectedIndex].text;
+      const titleInput = document.getElementById('sched-meet-title');
+      const descInput = document.getElementById('sched-meet-desc');
+
+      if (select.value && selectedText && !selectedText.startsWith('--')) {
+        titleInput.value = selectedText + ' Campaign Kickoff';
+        descInput.value = 'Campaign Kickoff and Creative Briefing Session for ' + selectedText + '.\n\nWe will align on the brand guidelines (colors, typography), hero banner promise, product features, and client testimonials. Please ensure the Google Doc campaign briefing template is filled out and accessible before our call.';
+      } else {
+        titleInput.value = '';
+        descInput.value = '';
+      }
+    }
+
+    function scheduleMeeting() {
+      const select = document.getElementById('meet-client-select');
+      const clientId = select.value;
+      const title = document.getElementById('sched-meet-title').value;
+      const timeStr = document.getElementById('sched-meet-time').value;
+      const guestEmail = document.getElementById('sched-meet-email').value;
+      const description = document.getElementById('sched-meet-desc').value;
+
+      if (!clientId) {
+        showError('Please select a Target Client first.');
+        return;
+      }
+      if (!title || !title.trim()) {
+        showError('Please enter an Event Title.');
+        return;
+      }
+      if (!timeStr) {
+        showError('Please select a Date & Time.');
+        return;
+      }
+
+      showLoading(true, 'Scheduling event and generating Meet link...');
+      hideMessages();
+
+      google.script.run
+        .withSuccessHandler(function (response) {
+          showLoading(false);
+          if (response.success) {
+            showSuccess('Meeting scheduled and linked successfully!\nMeet URL: ' + response.meetUrl);
+            // Clear fields
+            document.getElementById('sched-meet-title').value = '';
+            document.getElementById('sched-meet-time').value = '';
+            document.getElementById('sched-meet-email').value = '';
+            document.getElementById('sched-meet-desc').value = '';
+            // Refresh recent meetings list
+            loadMeetingLinkerData();
+          } else {
+            showError('Scheduling failed: ' + (response.error || 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function (err) {
+          showLoading(false);
+          showError('Apps Script Error: ' + err.message);
+        })
+        .apiScheduleAndLinkMeeting(clientId, title, timeStr, guestEmail, description);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function escapeQuote(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
+
+    // Scenario seeder handler
+    function runScenarioSeeding() {
+      showLoading(true, 'Seeding client test scenarios (creating Docs & Tabs)...');
+      hideMessages();
+      google.script.run
+        .withSuccessHandler(function (response) {
+          showLoading(false);
+          if (response.success) {
+            showSuccess('Successfully seeded 3 test scenarios under "LPE Test Scenarios" folder!');
+          } else {
+            showError('Failed to seed scenarios: ' + response.error);
+          }
+        })
+        .withFailureHandler(function (err) {
+          showLoading(false);
+          showError('System error seeding scenarios: ' + err.message);
+        })
+        .apiSeedLpeScenarios();
+    }
+
+    // Onboarding submission handler
+    function runOnboarding() {
+      const clientNameInput = document.getElementById('onboard-client-name');
+      const clientName = clientNameInput.value;
+
+      if (!clientName || clientName.trim() === '') {
+        showError('Please enter a valid Client Name.');
+        return;
+      }
+
+      const firstName = document.getElementById('onboard-contact-first-name').value;
+      const lastName = document.getElementById('onboard-contact-last-name').value;
+      const emails = document.getElementById('onboard-client-emails').value;
+      const domains = document.getElementById('onboard-client-domains').value;
+
+      showLoading(true, 'Creating client workspace...');
+      hideMessages();
+
+      google.script.run
+        .withSuccessHandler(function (response) {
+          showLoading(false);
+          if (response.success) {
+            // Populate links
+            document.getElementById('result-doc-link').href = response.docUrl;
+            document.getElementById('result-folder-link').href = response.folderUrl;
+            document.getElementById('result-transcripts-link').href = response.folderUrl; // Fallback to folder if transcripts nested
+
+            if (response.transcriptsFolderUrl) {
+              document.getElementById('result-transcripts-link').href = response.transcriptsFolderUrl;
+            }
+
+            // Transition views
+            document.getElementById('onboarding-form').classList.add('hidden');
+            document.getElementById('onboarding-results').classList.remove('hidden');
+            showSuccess('Workspace folder successfully created for ' + response.clientName);
+          } else {
+            showError(response.error || 'Failed to create onboarding folder.');
+          }
+        })
+        .withFailureHandler(function (error) {
+          showLoading(false);
+          showError('Apps Script Error: ' + error.message);
+        })
+        .apiProvisionClient(clientName, firstName, lastName, emails, domains);
+    }
+
+    function resetOnboardingForm() {
+      document.getElementById('onboard-client-name').value = '';
+      document.getElementById('onboard-contact-first-name').value = '';
+      document.getElementById('onboard-contact-last-name').value = '';
+      document.getElementById('onboard-client-emails').value = '';
+      document.getElementById('onboard-client-domains').value = '';
+      document.getElementById('onboarding-form').classList.remove('hidden');
+      document.getElementById('onboarding-results').classList.add('hidden');
+      hideMessages();
+    }
+
+    function loadConfig() {
+      google.script.run
+        .withSuccessHandler(function (config) {
+          if (config) {
+            lpeConfig = config;
+            document.getElementById('api-url').value = config.apiUrl;
+            document.getElementById('environment').value = config.environment;
+            if (config.apiKey) {
+              document.getElementById('api-key').value = config.apiKey;
+            }
+            // Skip LPE config screen to step 1
+            showStep(1);
+            loadClientDropdowns(function() {
+              checkOnboardingStatus();
+            });
+          }
+        })
+        .withFailureHandler(showError)
+        .getLPEConfig();
+    }
+
+    function saveConfigAndContinue() {
+      let apiUrl = document.getElementById('api-url').value.trim();
+      const environment = document.getElementById('environment').value;
+      const apiKey = document.getElementById('api-key').value.trim();
+
+      if (!apiUrl) {
+        showError('Please enter an API URL');
+        return;
+      }
+
+      // Defensive check: Ensure URL starts with http:// or https://
+      if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
+        showError('API URL must start with http:// or https://');
+        return;
+      }
+
+      // Defensive check: Strip trailing slashes to prevent double-slash path formatting issues
+      apiUrl = apiUrl.replace(/\/+$/, '');
+
+      const config = { apiUrl, environment, apiKey };
+
+      google.script.run
+        .withSuccessHandler(function (success) {
+          if (success) {
+            lpeConfig = config;
+            showSuccess('Configuration saved!');
+            setTimeout(() => {
+              showStep(1);
+              loadClientDropdowns(function() {
+                checkOnboardingStatus();
+              });
+            }, 500);
+          } else {
+            showError('Failed to save configuration');
+          }
+        })
+        .withFailureHandler(showError)
+        .saveLPEConfig(config);
+    }
+
+    function showStep(stepNumber) {
+      // Ensure Page Builder view is focused
+      switchTab('builder');
+
+      document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+      });
+      document.getElementById('step-' + stepNumber).classList.add('active');
+      currentStep = stepNumber;
+      hideMessages();
+    }
+
+    function nextStep() {
+      if (validateCurrentStep()) {
+        showStep(currentStep + 1);
+      }
+    }
+
+    function prevStep() {
+      showStep(currentStep - 1);
+    }
+
+    function validateCurrentStep() {
+      if (currentStep === 1) {
+        const clientId = document.getElementById('builder-client-select').value;
+        const pageId = document.getElementById('page-id').value;
+        const pageTitle = document.getElementById('page-title').value;
+
+        if (!clientId) {
+          showError('Please select a Target Client first.');
+          return false;
+        }
+
+        if (!pageId || !pageTitle) {
+          showError('Please fill in required fields (Page ID and Title)');
+          return false;
+        }
+
+        if (!/^[a-z0-9-]+$/.test(pageId)) {
+          showError('Page ID must be lowercase letters, numbers, and hyphens only');
+          return false;
+        }
+      }
+
+      if (currentStep === 2) {
+        const heroPromise = document.getElementById('hero-promise').value;
+        if (!heroPromise) {
+          showError('Please enter a hero promise');
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function addFeature() {
+      const featuresList = document.getElementById('features-list');
+      const newFeature = document.createElement('div');
+      newFeature.className = 'feature-item';
+      newFeature.innerHTML = '<input type="text" class="feature-input" placeholder="Another feature...">';
+      featuresList.appendChild(newFeature);
+    }
+
+    function toggleAssessment() {
+      const enabled = document.getElementById('assessment-enabled').checked;
+      const fields = document.getElementById('assessment-fields');
+      if (enabled) {
+        fields.classList.remove('hidden');
+      } else {
+        fields.classList.add('hidden');
+      }
+    }
+
+    function generateDraft() {
+      const authoringRequest = buildAuthoringRequest();
+
+      showLoading(true, 'Generating your landing page...');
+      hideMessages();
+
+      google.script.run
+        .withSuccessHandler(function (response) {
+          showLoading(false);
+          if (response.success) {
+            generatedData = response.data;
+            displayResults(response.data);
+            showStep(7);
+          } else {
+            showError(response.error || 'Failed to generate draft');
+          }
+        })
+        .withFailureHandler(function (error) {
+          showLoading(false);
+          showError('Error: ' + error.message);
+        })
+        .generateDraftPage(authoringRequest);
+    }
+
+    function runDocCompilation() {
+      showLoading(true, 'Reading briefing doc & generating preview...');
+      hideMessages();
+
+      google.script.run
+        .withSuccessHandler(function (response) {
+          showLoading(false);
+          if (response.success) {
+            generatedData = response;
+            displayResults(response);
+            showStep(7);
+          } else {
+            if (response.anomalies && response.anomalies.length > 0) {
+              generatedData = response;
+              displayResults(response);
+              showStep(7);
+              showError(response.error || 'Draft generated with known brand gaps.');
+            } else {
+              showError(response.error || 'Failed to onboard and compile document.');
+            }
+          }
+        })
+        .withFailureHandler(function (error) {
+          showLoading(false);
+          showError('Apps Script Error: ' + error.message);
+        })
+        .apiOnboardAndCompileActiveDoc();
+    }
+
+    function runSyncClientMedia() {
+      const selectEl = document.getElementById('builder-client-select');
+      const clientId = selectEl ? selectEl.value : '';
+      if (!clientId) {
+        showError('Please select a client from the registry first.');
+        return;
+      }
+      showLoading(true, 'Scanning Drive folder & syncing media assets...');
+      hideMessages();
+
+      google.script.run
+        .withSuccessHandler(function (response) {
+          showLoading(false);
+          if (response.success) {
+            showSuccess(response.message || 'Media assets synced successfully!');
+          } else {
+            showError(response.error || 'Failed to sync client media.');
+          }
+        })
+        .withFailureHandler(function (error) {
+          showLoading(false);
+          showError('Apps Script Error: ' + error.message);
+        })
+        .apiSyncClientMedia(clientId);
+    }
+
+    function buildAuthoringRequest() {
+      const featureInputs = document.querySelectorAll('.feature-input');
+      const features = Array.from(featureInputs)
+        .map(input => input.value)
+        .filter(val => val.trim() !== '');
+
+      const assessmentEnabled = document.getElementById('assessment-enabled').checked;
+      const assessmentQuestions = assessmentEnabled
+        ? document.getElementById('assessment-questions').value.split('\n').filter(q => q.trim() !== '')
+        : [];
+
+      return {
+        pageId: document.getElementById('page-id').value,
+        clientId: document.getElementById('builder-client-select').value || null,
+        authoringInputs: {
+          meta: {
+            title: document.getElementById('page-title').value,
+            description: document.getElementById('page-description').value,
+            audience: document.getElementById('audience-purpose').value
+          },
+          hero: {
+            rawText: document.getElementById('hero-promise').value,
+            ctaLabel: document.getElementById('cta-label').value,
+            ctaType: document.getElementById('cta-type').value
+          },
+          features: {
+            bullets: features
+          },
+          assessment: {
+            enabled: assessmentEnabled,
+            questions: assessmentQuestions
+          },
+          theme: {
+            brandKeywords: document.getElementById('brand-keywords').value,
+            primaryColor: document.getElementById('primary-color').value,
+            mood: document.getElementById('mood').value
+          },
+          routing: {
+            desiredPath: document.getElementById('desired-path').value
+          }
+        },
+        options: {
+          tone: 'casual',
+          maxSections: 5
+        }
+      };
+    }
+
+    function displayResults(data) {
+      // Unwrap double-wrapped data if present
+      const actualData = (data && data.data && !data.pageId) ? data.data : data;
+
+      document.getElementById('result-page-id').textContent = actualData.pageId || '';
+      document.getElementById('result-preview-url').textContent = actualData.previewUrl || '';
+
+      const previewLink = document.getElementById('result-preview-link');
+      if (previewLink && actualData.previewUrl) {
+        previewLink.href = actualData.previewUrl;
+      }
+
+      // Reset publish button state
+      const btn = document.getElementById('publish-showcase-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.textContent = '🚀 Publish to Showcase Feed';
+      }
+
+      const adkBox = document.getElementById('adk-report-box');
+      if (data.adkStatus) {
+        adkBox.classList.remove('hidden');
+        const statusEl = document.getElementById('result-adk-status');
+        statusEl.textContent = data.adkStatus.replace('_', ' ');
+        if (data.adkStatus === 'validated') {
+          adkBox.style.borderLeftColor = '#27ae60';
+          adkBox.style.backgroundColor = '#f0fff4';
+          statusEl.style.color = '#27ae60';
+        } else {
+          adkBox.style.borderLeftColor = '#f2994a';
+          adkBox.style.backgroundColor = '#fff8f2';
+          statusEl.style.color = '#f2994a';
+        }
+
+        const anomaliesEl = document.getElementById('result-adk-anomalies');
+        if (data.anomalies && data.anomalies.length > 0) {
+          let html = '<ul style="list-style: disc; padding-left: 16px; margin-top: 4px; text-align: left;">';
+          data.anomalies.forEach(a => {
+            html += '<li><strong>' + a.parameter + '</strong>: ' + escapeHtml(a.justification) + '</li>';
+          });
+          html += '</ul>';
+          anomaliesEl.innerHTML = html;
+        } else {
+          anomaliesEl.innerHTML = '<span style="color: #27ae60;">✓ Brand briefing and kickoff spoken inputs are fully aligned.</span>';
+        }
+      } else {
+        adkBox.classList.add('hidden');
+      }
+
+      if (data._mockMode) {
+        showSuccess('Draft generated (MOCK MODE - backend not yet available)');
+      } else {
+        showSuccess('Draft generated successfully!');
+      }
+    }
+
+    function getBaseUrl() {
+      if (!lpeConfig || !lpeConfig.apiUrl) {
+        return 'https://cloud-genai.com';
+      }
+      let baseDomain = lpeConfig.apiUrl.replace(/\/api\/?$/, ''); // Strip /api suffix
+      if (baseDomain.indexOf('cloudfunctions.net') !== -1 || baseDomain.indexOf('run.app') !== -1) {
+        baseDomain = 'https://cloud-genai.com';
+      }
+      return baseDomain;
+    }
+
+    // Actions
+    function openPreview() {
+      if (generatedData && generatedData.previewUrl) {
+        window.open(generatedData.previewUrl, '_blank');
+      }
+    }
+
+    function publishToShowcase() {
+      if (!generatedData) {
+        showError('No generated draft found to publish.');
+        return;
+      }
+
+      const pageId = generatedData.pageId;
+      const requestId = generatedData.requestId || '';
+      const clientId = document.getElementById('builder-client-select').value || '';
+      const tag = document.getElementById('builder-tag-select').value || 'sandbox';
+
+      showLoading(true, 'Publishing to showcase feed...');
+      hideMessages();
+
+      google.script.run
+        .withSuccessHandler(function (response) {
+          showLoading(false);
+          if (response.success) {
+            const showcaseUrl = getBaseUrl() + '/showcase';
+            showSuccess('Successfully published page to showcase feed! Tag: ' + tag + 
+                        '<br/><a href="' + showcaseUrl + '" target="_blank" style="color: #fff; text-decoration: underline; font-weight: bold;">View Showcase Feed</a>');
+            // Disable button to prevent double-publishing
+            const publishBtn = document.getElementById('publish-showcase-btn');
+            if (publishBtn) {
+              publishBtn.disabled = true;
+              publishBtn.style.opacity = '0.5';
+              publishBtn.textContent = '✓ Published';
+            }
+          } else {
+            showError(response.error || 'Failed to publish to showcase.');
+          }
+        })
+        .withFailureHandler(function (error) {
+          showLoading(false);
+          showError('Apps Script Error: ' + error.message);
+        })
+        .apiPublishToShowcase(pageId, requestId, clientId, tag);
+    }
+
+    function copyJSON() {
+      const mockJSON = JSON.stringify(buildAuthoringRequest(), null, 2);
+      navigator.clipboard.writeText(mockJSON).then(() => {
+        showSuccess('Request payload copied to clipboard!');
+      }).catch(() => {
+        showError('Failed to copy to clipboard');
+      });
+    }
+
+    function regenerate() {
+      showStep(6);
+      setTimeout(() => generateDraft(), 100);
+    }
+
+    function startOver() {
+      document.querySelectorAll('input[type="text"], textarea').forEach(input => {
+        if (input.id !== 'api-url' && input.id !== 'primary-color' && input.id !== 'onboard-client-name') {
+          input.value = '';
+        }
+      });
+      document.getElementById('page-title').value = '';
+      document.getElementById('page-description').value = '';
+      document.getElementById('assessment-enabled').checked = false;
+      toggleAssessment();
+      generatedData = null;
+      showStep(1);
+    }
+
+    function showLoading(show, message) {
+      const loader = document.getElementById('loading-indicator');
+      const text = document.getElementById('loading-text');
+
+      if (show) {
+        if (message) text.textContent = message;
+        loader.classList.add('show');
+      } else {
+        loader.classList.remove('show');
+      }
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('error-message');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      setTimeout(() => hideMessages(), 5000);
+    }
+
+    function checkOnboardingStatus(selectedClientId) {
+      const briefName = document.getElementById('status-brief-name');
+      const clientMatch = document.getElementById('status-client-match');
+      const meetingMatch = document.getElementById('status-meeting-match');
+      const transcriptMatch = document.getElementById('status-transcript-match');
+
+      if (briefName) briefName.textContent = 'Checking...';
+      if (clientMatch) clientMatch.innerHTML = 'Checking...';
+      if (meetingMatch) meetingMatch.innerHTML = 'Checking...';
+      if (transcriptMatch) transcriptMatch.innerHTML = 'Checking...';
+
+      const builderSelect = document.getElementById('builder-client-select');
+      const clientId = selectedClientId || (builderSelect ? builderSelect.value : null) || null;
+
+      google.script.run
+        .withSuccessHandler(function (status) {
+          if (!status) return;
+
+          if (briefName) {
+            briefName.textContent = status.docName || 'No document open';
+          }
+
+          if (status.clientFound) {
+            if (clientMatch) {
+              clientMatch.innerHTML = '<span style="color: #137333; font-weight: bold;">✓ Matched: ' + status.clientName + ' (' + status.clientId + ')</span>';
+            }
+            
+            // Auto-align dropdown selectors to the matched client ID
+            // Only do this if they matched via auto-detect (i.e. no client was already selected or passed)
+            if (!clientId) {
+              const builderSelect = document.getElementById('builder-client-select');
+              if (builderSelect && status.clientId) {
+                builderSelect.value = status.clientId;
+              }
+              const meetSelect = document.getElementById('meet-client-select');
+              if (meetSelect && status.clientId) {
+                meetSelect.value = status.clientId;
+              }
+            }
+
+            if (meetingMatch) {
+              if (status.meetingLinked) {
+                meetingMatch.innerHTML = '<span style="color: #137333; font-weight: bold;">✓ Linked (' + (status.meetTitle || status.meetId) + ')</span>';
+              } else {
+                meetingMatch.innerHTML = '<span style="color: #c5221f; font-weight: bold;">✗ No Meeting Linked</span>';
+              }
+            }
+            if (transcriptMatch) {
+              if (status.transcriptFound) {
+                if (status.transcriptFileId) {
+                  transcriptMatch.innerHTML = '<span style="color: #137333; font-weight: bold;">✓ Found: <a href="https://drive.google.com/file/d/' + status.transcriptFileId + '/view" target="_blank" style="color: #1a73e8; text-decoration: underline;">' + status.transcriptFileName + '</a></span>';
+                } else {
+                  transcriptMatch.innerHTML = '<span style="color: #137333; font-weight: bold;">✓ Found: ' + status.transcriptFileName + '</span>';
+                }
+              } else {
+                transcriptMatch.innerHTML = '<span style="color: #c5221f; font-weight: bold;">✗ Missing Transcript</span>';
+              }
+            }
+          } else {
+            if (clientMatch) {
+              clientMatch.innerHTML = '<span style="color: #c5221f; font-weight: bold;">✗ Unregistered Client (' + (status.error || 'Check document name prefix') + ')</span>';
+            }
+            if (meetingMatch) {
+              meetingMatch.innerHTML = '<span style="color: #b06000; font-weight: bold;">⚠ Pending Client Selection</span>';
+            }
+            if (transcriptMatch) {
+              transcriptMatch.innerHTML = '<span style="color: #b06000; font-weight: bold;">⚠ Pending Client Selection</span>';
+            }
+          }
+        })
+        .withFailureHandler(function (err) {
+          console.error('Failed to get onboarding status:', err);
+          if (briefName) briefName.textContent = 'Error loading status';
+        })
+        .apiGetActiveDocOnboardingStatus(clientId);
+    }
+
+    function showSuccess(message) {
+      const successEl = document.getElementById('success-message');
+      successEl.innerHTML = message;
+      successEl.classList.add('show');
+      setTimeout(() => hideMessages(), 15000);
+    }
+
+    function hideMessages() {
+      document.getElementById('error-message').classList.remove('show');
+      document.getElementById('success-message').classList.remove('show');
+    }
+
+    function loadProposals() {
+      showLoading(true, 'Fetching suggestions from document tab...');
+      google.script.run
+        .withSuccessHandler(function (proposals) {
+          showLoading(false);
+          renderProposalsList(proposals);
+        })
+        .withFailureHandler(function (err) {
+          showLoading(false);
+          showError('Failed to fetch proposals: ' + err.message);
+        })
+        .apiGetProposals();
+    }
+
+    function renderProposalsList(proposals) {
+      const container = document.getElementById('proposals-list-container');
+      if (!container) return;
+      
+      if (!proposals || proposals.length === 0) {
+        container.innerHTML = '<p style="color: #9e9e9e; font-style: italic; font-size: 13px; text-align: center; padding: 24px 0;">No pending suggestions found.</p>';
+        return;
+      }
+      
+      let html = '';
+      proposals.forEach(p => {
+        html += `
+          <div style="background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #ffb300; border-radius: 4px; padding: 12px; margin-bottom: 12px; font-family: sans-serif; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="font-weight: bold; font-size: 13px; color: #b37400; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+              <span>[${p.id}] ${p.label || 'Proposed Revision'}</span>
+              <span style="font-size: 10px; background: #ffe082; padding: 2px 6px; border-radius: 12px; text-transform: uppercase;">${p.type}</span>
+            </div>
+            <div style="font-size: 12px; margin-bottom: 8px; color: #3c4043; line-height: 1.45;">
+              ${p.old_value ? `<strong>Current:</strong> <span style="text-decoration: line-through; color: #c5221f; font-family: monospace; background: #fde8e8; padding: 1px 4px; border-radius: 3px;">${p.old_value}</span><br/>` : ''}
+              <strong>Suggested:</strong> <span style="font-weight: bold; color: #137333; font-family: monospace; background: #e6f4ea; padding: 1px 4px; border-radius: 3px;">${p.new_value}</span>
+            </div>
+            <div style="background: #ffffff; border: 1px dashed #d1d1d1; border-radius: 4px; padding: 8px; font-size: 11.5px; color: #5f6368; line-height: 1.35; margin-bottom: 10px; font-style: italic;">
+              "${p.reason}"
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="approveProposal('${p.id}')" style="background: #137333; border: 1px solid #137333; border-radius: 4px; color: #ffffff; cursor: pointer; font-size: 12px; font-weight: 500; padding: 6px 12px; width: auto; display: inline-block; margin-top: 0;">Approve Change</button>
+              <button onclick="ignoreProposal('${p.id}')" style="background: #ffffff; border: 1px solid #dadce0; border-radius: 4px; color: #c5221f; cursor: pointer; font-size: 12px; font-weight: 500; padding: 6px 12px; width: auto; display: inline-block; margin-top: 0;">Ignore</button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function approveProposal(proposalId) {
+      showLoading(true, 'Applying replacement in document brief tab...');
+      google.script.run
+        .withSuccessHandler(function (res) {
+          showLoading(false);
+          if (res && res.success) {
+            showSuccess('Successfully approved and updated: ' + proposalId);
+            loadProposals();
+          } else {
+            showError('Failed to apply: ' + (res ? res.error : 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function (err) {
+          showLoading(false);
+          showError('App Script Error: ' + err.message);
+        })
+        .apiApproveProposal(proposalId);
+    }
+
+    function ignoreProposal(proposalId) {
+      showLoading(true, 'Ignoring proposal and clearing highlights...');
+      google.script.run
+        .withSuccessHandler(function (res) {
+          showLoading(false);
+          if (res && res.success) {
+            showSuccess('Successfully ignored proposal: ' + proposalId);
+            loadProposals();
+          } else {
+            showError('Failed to ignore: ' + (res ? res.error : 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function (err) {
+          showLoading(false);
+          showError('App Script Error: ' + err.message);
+        })
+        .apiIgnoreProposal(proposalId);
+    }
+  </script>
+</body>
+
+</html>
